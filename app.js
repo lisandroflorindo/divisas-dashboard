@@ -339,8 +339,7 @@ function renderMainQuotesTable(fxData) {
       <tr>
         <td>${row.code}</td>
         <td>${row.label}</td>
-        <td>${value.toFixed(2)} ARS</td>
-      </tr>
+        <td>${value.toFixed(2)} ARS</td></tr>
     `;
   });
 
@@ -395,13 +394,11 @@ function renderCarouselAll(fxData) {
 
   carouselEl.innerHTML = html;
 
-  // activar auto-scroll continuo en mobile
+  // activar auto-scroll continuo
   setupCarouselAutoScroll();
 }
 
-// ==============================
 // Auto-scroll continuo del carrusel (en todas las pantallas)
-// ==============================
 function setupCarouselAutoScroll() {
   if (!carouselEl) return;
 
@@ -425,8 +422,10 @@ function setupCarouselAutoScroll() {
     lastTimestamp = timestamp;
 
     const maxScroll = carouselEl.scrollWidth - carouselEl.clientWidth;
+
+    // 🟢 IMPORTANTE: si todavía no hay overflow, seguimos pidiendo frames
     if (maxScroll <= 0) {
-      // No hay overflow, nada que mover
+      carouselAutoScrollFrame = requestAnimationFrame(step);
       return;
     }
 
