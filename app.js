@@ -3,6 +3,7 @@ console.log("app.js cargado ✅");
 // ==============================
 // Configuración de APIs
 // ==============================
+
 // API de tasas globales (base USD)
 const FX_API_URL = "https://open.er-api.com/v6/latest/USD";
 
@@ -47,9 +48,32 @@ const FX_SYMBOLS_FOR_ARS = [
   "CNY"
 ];
 
+// Tipos de dólar (DolarApi)
+const DOLLAR_CASAS_ORDER = [
+  "oficial",
+  "blue",
+  "bolsa",          // MEP
+  "contadoconliqui",// CCL
+  "mayorista",
+  "tarjeta",
+  "cripto"
+];
+
+const DOLLAR_CASAS_LABELS = {
+  oficial: "Oficial",
+  blue: "Blue",
+  bolsa: "MEP",
+  contadoconliqui: "CCL",
+  mayorista: "Mayorista",
+  tarjeta: "Tarjeta",
+  cripto: "Cripto"
+};
+
 // ==============================
 // DOM
 // ==============================
+
+// Conversor
 const amountInput = document.getElementById("amount");
 const fromSelect = document.getElementById("from-currency");
 const toSelect = document.getElementById("to-currency");
@@ -58,24 +82,92 @@ const resultBox = document.getElementById("result");
 const resultValue = document.getElementById("result-value");
 const swapBtn = document.getElementById("swap-btn");
 
+// Cotizaciones vs ARS
 const mainQuotesBody = document.getElementById("main-quotes-body");
 const carouselEl = document.getElementById("rates-carousel");
+
+// Tipos de dólar
 const dollarTypesBody = document.getElementById("dollar-types-body");
 
+// Riesgo país
 const riesgoCard = document.getElementById("riesgo-card");
 const riesgoValor = document.getElementById("riesgo-valor");
 const riesgoFecha = document.getElementById("riesgo-fecha");
 const riesgoBadge = document.getElementById("riesgo-badge");
 
+// Últimas actualizaciones
 const fxLastUpdateEl = document.getElementById("fx-last-update");
 const dollarLastUpdateEl = document.getElementById("dollar-last-update");
 const riesgoLastUpdateEl = document.getElementById("riesgo-last-update");
 
+// Tema
+const themeToggleBtn = document.getElementById("theme-toggle");
+
 // ==============================
 // Estado de tasas (cache en memoria)
 // ==============================
+
 let latestRates = null;      // { "ARS": valor, "EUR": valor, ... } base USD
 let lastRatesUpdate = null;  // Date
+
+// Auto-scroll carrusel
+let carouselAutoScrollFrame = null;
+
+// ==============================
+// Helpers de tiempo y formato
+// ==============================
+
+function formatLocalTime(date) {
+  if (!date) return "—";
+  return date.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+function setLastUpdate(element, date = new Date()) {
+  if (!element) return;
+  element.textContent = formatLocalTime(date);
+}
+
+// ==============================
+// Tema oscuro / claro
+// ==============================
+
+function applyTheme(theme) {
+  const body = document.body;
+  if (theme === "light") {
+    body.classList.add("theme-light");
+    if (themeToggleBtn) {
+      themeToggleBtn.textContent = "🌙 Modo oscuro";
+    }
+  } else {
+    body.classList.remove("theme-light");
+    if (themeToggleBtn) {
+      themeToggleBtn.textContent = "☀️ Modo claro";
+    }
+  }
+  localStorage.setItem("theme", theme);
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("theme");
+  const initialTheme = saved === "light" ? "light" : "dark";
+  applyTheme(initialTheme);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      const isLight = document.body.classList.contains("theme-light");
+      const next = isLight ? "dark" : "light";
+      applyTheme(next);
+    });
+  }
+}
+
+// ==============================
+// Tasas FX: fetch + cache
+// ==============================
 
 async function fetchLatestRates() {
   console.log("🔄 Pidiendo tasas a open.er-api.com...");
@@ -93,23 +185,6 @@ async function fetchLatestRates() {
 
   latestRates = data.rates;
   lastRatesUpdate = new Date();
-}
-
-// ==============================
-// Helpers de tiempo y formato
-// ==============================
-function formatLocalTime(date) {
-  if (!date) return "—";
-  return date.toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-}
-
-function setLastUpdate(element, date = new Date()) {
-  if (!element) return;
-  element.textContent = formatLocalTime(date);
 }
 
 /**
@@ -134,6 +209,7 @@ async function ensureRates(force = false) {
 // ==============================
 // 1) Cargar monedas del conversor
 // ==============================
+
 function loadCurrenciesForConverter() {
   fromSelect.innerHTML = "";
   toSelect.innerHTML = "";
@@ -164,8 +240,9 @@ function loadCurrenciesForConverter() {
 // ==============================
 // 2) Conversor usando las tasas (base USD)
 // ==============================
+
 async function convertCurrencyAPI(amount, from, to) {
-  // Aseguramos que si pasó tiempo, se vuelvan a pedir las tasas
+  // Aseguramos tasas frescas
   await ensureRates();
 
   if (from === to) return amount;
@@ -178,8 +255,10 @@ async function convertCurrencyAPI(amount, from, to) {
   let result;
 
   if (from === "USD") {
+    // 1 USD = rates[to] (to)
     result = amount * rates[to];
   } else if (to === "USD") {
+    // 1 USD = rates[from] (from) ⇒ 1 from = 1 / rates[from] USD
     result = amount / rates[from];
   } else {
     const amountInUSD = amount / rates[from];
@@ -237,6 +316,7 @@ swapBtn.addEventListener("click", () => {
 // ==============================
 // 3) FX vs ARS (tabla + carrusel)
 // ==============================
+
 function renderMainQuotesTable(fxData) {
   const order = [
     { code: "USD", label: "Dólar estadounidense" },
@@ -271,7 +351,7 @@ function renderMainQuotesTable(fxData) {
   mainQuotesBody.innerHTML = html;
 }
 
-// Carrusel como tira de chips, mostrando TODAS
+// Carrusel como tira de chips
 function renderCarouselAll(fxData) {
   const labels = {
     USD: "Dólar vs Peso Argentino",
@@ -296,7 +376,6 @@ function renderCarouselAll(fxData) {
   let html = "";
   codes.forEach((code) => {
     const value = fxData[code];
-
     const valueText = `${value.toFixed(2)} ARS`;
 
     html += `
@@ -315,11 +394,60 @@ function renderCarouselAll(fxData) {
   });
 
   carouselEl.innerHTML = html;
+
+  // activar auto-scroll continuo en mobile
+  setupCarouselAutoScroll();
+}
+
+// ==============================
+// Auto-scroll continuo del carrusel (en todas las pantallas)
+// ==============================
+function setupCarouselAutoScroll() {
+  if (!carouselEl) return;
+
+  // Cancelamos cualquier animación anterior
+  if (carouselAutoScrollFrame) {
+    cancelAnimationFrame(carouselAutoScrollFrame);
+    carouselAutoScrollFrame = null;
+  }
+
+  const speedPxPerSec = 40; // velocidad: px por segundo (ajustable)
+  let lastTimestamp = null;
+
+  function step(timestamp) {
+    if (!lastTimestamp) {
+      lastTimestamp = timestamp;
+      carouselAutoScrollFrame = requestAnimationFrame(step);
+      return;
+    }
+
+    const delta = timestamp - lastTimestamp; // ms desde el frame anterior
+    lastTimestamp = timestamp;
+
+    const maxScroll = carouselEl.scrollWidth - carouselEl.clientWidth;
+    if (maxScroll <= 0) {
+      // No hay overflow, nada que mover
+      return;
+    }
+
+    const distance = (speedPxPerSec * delta) / 1000; // px a avanzar
+    let next = carouselEl.scrollLeft + distance;
+
+    if (next >= maxScroll) {
+      // Cuando llega al final, vuelve al inicio
+      next = 0;
+    }
+
+    carouselEl.scrollLeft = next;
+    carouselAutoScrollFrame = requestAnimationFrame(step);
+  }
+
+  // Arrancamos la animación
+  carouselAutoScrollFrame = requestAnimationFrame(step);
 }
 
 async function loadFxAgainstARS() {
   try {
-    // Acá forzamos que, si pasó tiempo, vaya a buscar tasas nuevas
     await ensureRates();
     const rates = latestRates;
 
@@ -338,39 +466,24 @@ async function loadFxAgainstARS() {
 
     renderMainQuotesTable(fxData);
     renderCarouselAll(fxData);
-        setLastUpdate(fxLastUpdateEl, lastRatesUpdate || new Date());
 
+    setLastUpdate(fxLastUpdateEl, lastRatesUpdate || new Date());
   } catch (error) {
     console.error(error);
-    carouselEl.innerHTML =
-      "<p>Error al cargar el carrusel de cotizaciones.</p>";
-    mainQuotesBody.innerHTML =
-      "<tr><td colspan='3'>Error al cargar las cotizaciones.</td></tr>";
+    if (carouselEl) {
+      carouselEl.innerHTML =
+        "<p>Error al cargar el carrusel de cotizaciones.</p>";
+    }
+    if (mainQuotesBody) {
+      mainQuotesBody.innerHTML =
+        "<tr><td colspan='3'>Error al cargar las cotizaciones.</td></tr>";
+    }
   }
 }
 
 // ==============================
 // 4) Tipos de dólar en Argentina
 // ==============================
-const DOLLAR_CASAS_ORDER = [
-  "oficial",
-  "blue",
-  "bolsa",          // MEP
-  "contadoconliqui",// CCL
-  "mayorista",
-  "tarjeta",
-  "cripto"
-];
-
-const DOLLAR_CASAS_LABELS = {
-  oficial: "Oficial",
-  blue: "Blue",
-  bolsa: "MEP",
-  contadoconliqui: "CCL",
-  mayorista: "Mayorista",
-  tarjeta: "Tarjeta",
-  cripto: "Cripto"
-};
 
 async function loadDollarTypes() {
   if (!dollarTypesBody) return;
@@ -381,8 +494,6 @@ async function loadDollarTypes() {
         <td colspan="3">Cargando tipos de dólar...</td>
       </tr>
     `;
-        setLastUpdate(dollarLastUpdateEl, new Date());
-
 
     const res = await fetch(DOLAR_API_URL);
     if (!res.ok) {
@@ -437,6 +548,7 @@ async function loadDollarTypes() {
     }
 
     dollarTypesBody.innerHTML = html;
+    setLastUpdate(dollarLastUpdateEl, new Date());
   } catch (error) {
     console.error(error);
     dollarTypesBody.innerHTML = `
@@ -448,8 +560,9 @@ async function loadDollarTypes() {
 }
 
 // ==============================
-// 5) Riesgo país Argentina
+// 5) Riesgo País Argentina
 // ==============================
+
 async function loadRiesgoPais() {
   try {
     const res = await fetch(RIESGO_API_URL);
@@ -486,8 +599,8 @@ async function loadRiesgoPais() {
     riesgoCard.classList.remove("riesgo-low", "riesgo-medium", "riesgo-high");
     riesgoCard.classList.add(levelClass);
     riesgoBadge.textContent = label;
-        setLastUpdate(riesgoLastUpdateEl, new Date());
 
+    setLastUpdate(riesgoLastUpdateEl, new Date());
   } catch (error) {
     console.error(error);
     riesgoValor.textContent = "Error";
@@ -499,7 +612,9 @@ async function loadRiesgoPais() {
 // ==============================
 // 6) Inicializar
 // ==============================
+
 function init() {
+  initTheme();
   loadCurrenciesForConverter();
 
   // Carga inicial
@@ -507,11 +622,14 @@ function init() {
   loadRiesgoPais();
   loadDollarTypes();
 
-  // Refrescar cada 5 minutos (300000 ms)
+  // Refrescar cada 5 minutos
   const FIVE_MIN = 5 * 60 * 1000;
   setInterval(() => loadFxAgainstARS(), FIVE_MIN);
   setInterval(() => loadRiesgoPais(), FIVE_MIN);
   setInterval(() => loadDollarTypes(), FIVE_MIN);
+
+  // Recalcular auto-scroll si cambia el tamaño/orientación
+  window.addEventListener("resize", setupCarouselAutoScroll);
 }
 
 document.addEventListener("DOMContentLoaded", init);

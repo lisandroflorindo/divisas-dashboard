@@ -53,18 +53,7 @@ body {
   gap: 1rem;
 }
 
-.header-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
-.header-subtitle {
-  font-size: 0.95rem;
-  color: var(--muted);
-}
-
-<<<<<<< HEAD
+/* Logo + título */
 .header-brand {
   display: flex;
   align-items: center;
@@ -87,8 +76,17 @@ body {
   display: block;
 }
 
-=======
->>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
+.header-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.header-subtitle {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
 /* Cards genéricas */
 .card {
   background: radial-gradient(circle at top left, var(--bg-alt) 0, var(--bg-soft) 55%);
@@ -121,24 +119,25 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/* Contenedor: tira de chips */
+/* Contenedor: cinta horizontal de chips */
 .carousel-card {
   margin-top: 0.75rem;
-  padding: 1rem 1.2rem;
+  padding: 1rem 0.6rem;
   border-radius: 0.9rem;
   border: 1px solid var(--border);
   background: rgba(15, 23, 42, 0.9);
   display: flex;
-  flex-wrap: wrap;
-  align-items: stretch;
+  flex-wrap: nowrap;      /* todas en una fila */
+  overflow-x: hidden;     /* solo se mueve por JS */
+  overflow-y: hidden;
   gap: 0.75rem;
   min-height: 3.5rem;
 }
 
 /* Cada chip de cotización */
 .rate-chip {
-  min-width: 120px;
-  flex: 1 1 160px;
+  flex: 0 0 220px;        /* ancho fijo de cada card en escritorio */
+  max-width: 220px;
   border-radius: 0.75rem;
   border: 1px solid var(--border);
   padding: 0.45rem 0.6rem;
@@ -179,10 +178,30 @@ body {
 }
 
 /* Conversor */
+.converter-card {
+  position: relative;
+  overflow: hidden;
+}
+
 .converter-card .subtitle {
   font-size: 0.85rem;
   color: var(--muted);
   margin-bottom: 1rem;
+}
+
+/* Marca de agua con el logo de la página (opcional) */
+.converter-card::after {
+  content: "";
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: url("logo-divisas.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  pointer-events: none;
 }
 
 .field {
@@ -328,7 +347,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-<<<<<<< HEAD
 /* Cards con tablas (sin scroll horizontal forzado) */
 .quotes-card,
 .dollar-types-card {
@@ -336,18 +354,8 @@ body {
 }
 
 /* La tabla se adapta al ancho disponible */
-=======
-/* Hacemos que las cards con tablas puedan scroll horizontal en móvil */
-.quotes-card,
-.dollar-types-card {
-  overflow-x: auto;
-}
-
-/* Para que la tabla no se achique demasiado en pantallas chicas */
->>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
 .quotes-table {
   width: 100%;
-  min-width: 480px;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
@@ -444,42 +452,10 @@ body {
   font-weight: 600;
 }
 
-<<<<<<< HEAD
-/* Tema claro: overrides */
-body.theme-light {
-  --bg: #f3f4f6;
-  --bg-soft: #ffffff;
-  --bg-alt: #e5e7eb;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #d1d5db;
-  --shadow-lg: 0 10px 25px rgba(15, 23, 42, 0.1);
-  background: linear-gradient(to bottom, #f9fafb, #e5e7eb);
-}
-
-body.theme-light .card {
-  background: radial-gradient(circle at top left, var(--bg-alt) 0, var(--bg-soft) 55%);
-}
-
-body.theme-light .theme-toggle-btn {
-  background: #111827;
-  color: #f9fafb;
-}
-
-body.theme-light .quotes-table tr:nth-child(even) td {
-  background: rgba(229, 231, 235, 0.8);
-}
-
 /* ========================= */
 /*       MEDIA QUERIES       */
 /* ========================= */
 
-=======
-/* ========================= */
-/*       MEDIA QUERIES       */
-/* ========================= */
-
->>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
 /* Tablets / pantallas medianas */
 @media (max-width: 900px) {
   .main-grid {
@@ -507,60 +483,47 @@ body.theme-light .quotes-table tr:nth-child(even) td {
 
   .header-top {
     flex-direction: column;
-<<<<<<< HEAD
-    align-items: center; /* centramos en mobile */
+    align-items: center;
   }
 
-  .header-title {
-    font-size: 1.5rem;
-    text-align: center; /* centrado */
-=======
-    align-items: stretch;
-  }
-
-  .theme-toggle-btn {
-    align-self: flex-start;
-  }
-
-  .header-title {
-    font-size: 1.5rem;
->>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
-  }
-
-  .header-subtitle {
-    font-size: 0.85rem;
-<<<<<<< HEAD
-    text-align: center; /* centrado */
-  }
-
-   .header-brand {
+  .header-brand {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
+  .header-title {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .header-subtitle {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
   .theme-toggle-btn {
-    align-self: center; /* botón centrado */
+    align-self: center;
   }
 
-=======
-  }
-
->>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
   .card {
     padding: 1.1rem 1rem;
   }
 
+  /* CARRUSEL SOLO AUTOMÁTICO (SIN SCROLL TÁCTIL) EN MOBILE */
   .carousel-card {
-    padding: 0.9rem;
+    padding: 0.9rem 0.6rem;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: hidden;   /* 👈 sin scroll táctil */
+    overflow-y: hidden;
+    gap: 0.75rem;
+    touch-action: pan-y;  /* 👈 desactiva arrastre horizontal */
   }
 
   .rate-chip {
-    flex: 1 1 100%;
-  }
-
-  .quotes-table {
-    min-width: 420px;
+    flex: 0 0 80%;        /* cada slide ocupa ~80% del ancho */
+    max-width: 40%;
   }
 }
 
@@ -574,24 +537,4 @@ body.theme-light .quotes-table tr:nth-child(even) td {
     font-size: 0.8rem;
   }
 
-  .theme-toggle-btn {
-    width: 100%;
-    justify-content: center;
-  }
-}
-
-/* Celulares muy chicos */
-@media (max-width: 400px) {
-  .header-title {
-    font-size: 1.35rem;
-  }
-
-  .header-subtitle {
-    font-size: 0.8rem;
-  }
-
-  .theme-toggle-btn {
-    width: 100%;
-    justify-content: center;
-  }
 }
