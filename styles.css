@@ -64,6 +64,7 @@ body {
   color: var(--muted);
 }
 
+<<<<<<< HEAD
 .header-brand {
   display: flex;
   align-items: center;
@@ -86,6 +87,8 @@ body {
   display: block;
 }
 
+=======
+>>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
 /* Cards genéricas */
 .card {
   background: radial-gradient(circle at top left, var(--bg-alt) 0, var(--bg-soft) 55%);
@@ -325,6 +328,7 @@ body {
   margin-bottom: 1.5rem;
 }
 
+<<<<<<< HEAD
 /* Cards con tablas (sin scroll horizontal forzado) */
 .quotes-card,
 .dollar-types-card {
@@ -332,8 +336,18 @@ body {
 }
 
 /* La tabla se adapta al ancho disponible */
+=======
+/* Hacemos que las cards con tablas puedan scroll horizontal en móvil */
+.quotes-card,
+.dollar-types-card {
+  overflow-x: auto;
+}
+
+/* Para que la tabla no se achique demasiado en pantallas chicas */
+>>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
 .quotes-table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
@@ -430,6 +444,7 @@ body {
   font-weight: 600;
 }
 
+<<<<<<< HEAD
 /* Tema claro: overrides */
 body.theme-light {
   --bg: #f3f4f6;
@@ -459,6 +474,12 @@ body.theme-light .quotes-table tr:nth-child(even) td {
 /*       MEDIA QUERIES       */
 /* ========================= */
 
+=======
+/* ========================= */
+/*       MEDIA QUERIES       */
+/* ========================= */
+
+>>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
 /* Tablets / pantallas medianas */
 @media (max-width: 900px) {
   .main-grid {
@@ -486,16 +507,29 @@ body.theme-light .quotes-table tr:nth-child(even) td {
 
   .header-top {
     flex-direction: column;
+<<<<<<< HEAD
     align-items: center; /* centramos en mobile */
   }
 
   .header-title {
     font-size: 1.5rem;
     text-align: center; /* centrado */
+=======
+    align-items: stretch;
+  }
+
+  .theme-toggle-btn {
+    align-self: flex-start;
+  }
+
+  .header-title {
+    font-size: 1.5rem;
+>>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
   }
 
   .header-subtitle {
     font-size: 0.85rem;
+<<<<<<< HEAD
     text-align: center; /* centrado */
   }
 
@@ -509,6 +543,10 @@ body.theme-light .quotes-table tr:nth-child(even) td {
     align-self: center; /* botón centrado */
   }
 
+=======
+  }
+
+>>>>>>> 36a3cf5562994d047d4957b6590e4ff12a769408
   .card {
     padding: 1.1rem 1rem;
   }
@@ -519,6 +557,26 @@ body.theme-light .quotes-table tr:nth-child(even) td {
 
   .rate-chip {
     flex: 1 1 100%;
+  }
+
+  .quotes-table {
+    min-width: 420px;
+  }
+}
+
+/* Celulares muy chicos */
+@media (max-width: 400px) {
+  .header-title {
+    font-size: 1.35rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .theme-toggle-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 
