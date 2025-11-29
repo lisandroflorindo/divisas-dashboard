@@ -110,8 +110,8 @@ const themeToggleBtn = document.getElementById("theme-toggle");
 let latestRates = null;      // { "ARS": valor, "EUR": valor, ... } base USD
 let lastRatesUpdate = null;  // Date
 
-// Auto-scroll carrusel
-let carouselAutoScrollFrame = null;
+// Auto-scroll carrusel (setInterval)
+let carouselScrollTimer = null;
 
 // ==============================
 // Helpers de tiempo y formato
@@ -339,7 +339,8 @@ function renderMainQuotesTable(fxData) {
       <tr>
         <td>${row.code}</td>
         <td>${row.label}</td>
-        <td>${value.toFixed(2)} ARS</td></tr>
+        <td>${value.toFixed(2)} ARS</td>
+      </tr>
     `;
   });
 
@@ -403,46 +404,28 @@ function setupCarouselAutoScroll() {
   if (!carouselEl) return;
 
   // Cancelamos cualquier animación anterior
-  if (carouselAutoScrollFrame) {
-    cancelAnimationFrame(carouselAutoScrollFrame);
-    carouselAutoScrollFrame = null;
+  if (carouselScrollTimer) {
+    clearInterval(carouselScrollTimer);
+    carouselScrollTimer = null;
   }
 
-  const speedPxPerSec = 40; // velocidad: px por segundo (ajustable)
-  let lastTimestamp = null;
+  // siempre arrancamos desde el inicio
+  carouselEl.scrollLeft = 0;
 
-  function step(timestamp) {
-    if (!lastTimestamp) {
-      lastTimestamp = timestamp;
-      carouselAutoScrollFrame = requestAnimationFrame(step);
-      return;
-    }
+  const SPEED_PX = 1.5;   // píxeles por "tick" (ajustable)
+  const INTERVAL_MS = 20; // cada cuántos ms se mueve (20ms ~ 50fps)
 
-    const delta = timestamp - lastTimestamp; // ms desde el frame anterior
-    lastTimestamp = timestamp;
-
+  carouselScrollTimer = setInterval(() => {
     const maxScroll = carouselEl.scrollWidth - carouselEl.clientWidth;
-
-    // 🟢 IMPORTANTE: si todavía no hay overflow, seguimos pidiendo frames
     if (maxScroll <= 0) {
-      carouselAutoScrollFrame = requestAnimationFrame(step);
-      return;
+      return; // nada que desplazar
     }
-
-    const distance = (speedPxPerSec * delta) / 1000; // px a avanzar
-    let next = carouselEl.scrollLeft + distance;
-
+    let next = carouselEl.scrollLeft + SPEED_PX;
     if (next >= maxScroll) {
-      // Cuando llega al final, vuelve al inicio
       next = 0;
     }
-
     carouselEl.scrollLeft = next;
-    carouselAutoScrollFrame = requestAnimationFrame(step);
-  }
-
-  // Arrancamos la animación
-  carouselAutoScrollFrame = requestAnimationFrame(step);
+  }, INTERVAL_MS);
 }
 
 async function loadFxAgainstARS() {
