@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Divisas Ahora</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+        <header class="header">
+      <div class="header-top">
+        <div>
+          <h1 class="header-title">Divisas y Riesgo País</h1>
+          <p class="header-subtitle">
+            Conversor, cotizaciones en tiempo (casi) real y riesgo país de Argentina.
+          </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Carrusel / ticker -->
+    <section class="ticker-section card">
+      <small class="last-update">
+        Última actualización: <span id="fx-last-update">—</span>
+      </small>
+      <div id="rates-carousel" class="carousel-card">
+        <p>Cargando cotizaciones...</p>
+      </div>
+    </section>
+
+
+    <!-- Grid: conversor + tabla -->
+    <section class="main-grid">
+      <!-- Conversor -->
+      <section class="card converter-card">
+        <h2>Conversor de divisas</h2>
+
+        <form id="converter-form">
+          <div class="field">
+            <label for="amount">Monto</label>
+            <input
+              type="number"
+              id="amount"
+              min="0"
+              step="0.01"
+              placeholder="Ej: 1000"
+              required
+            />
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="from-currency">De</label>
+              <select id="from-currency"></select>
+            </div>
+
+            <button type="button" id="swap-btn" class="swap-btn" title="Invertir monedas">
+              ⇄
+            </button>
+
+            <div class="field">
+              <label for="to-currency">A</label>
+              <select id="to-currency"></select>
+            </div>
+          </div>
+
+          <button type="submit" class="primary-btn">
+            Convertir
+          </button>
+        </form>
+
+        <div id="result" class="result">
+          <span class="result-label">Resultado:</span>
+          <span id="result-value">—</span>
+        </div>
+
+        <p class="disclaimer">
+          Las tasas provienen de <code>https://api.exchangerate.host</code> y pueden variar respecto
+          a cotizaciones locales o financieras específicas.
+        </p>
+      </section>
+
+      <!-- Tabla de cotizaciones -->
+      <section class="card quotes-card">
+        <h2>Cotizaciones principales vs ARS</h2>
+        <table class="quotes-table">
+          <thead>
+            <tr>
+              <th>Moneda</th>
+              <th>Descripción</th>
+              <th>1 unidad = ARS</th>
+            </tr>
+          </thead>
+          <tbody id="main-quotes-body">
+            <tr>
+              <td colspan="3">Cargando cotizaciones...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+
+    <!-- Tipos de dólar en Argentina -->
+    <section class="card dollar-types-card">
+      <h2>Dólar en Argentina</h2>
+      <p class="subtitle">
+        Cotizaciones de distintos tipos de dólar (oficial, blue, MEP, CCL, etc.) en pesos argentinos.
+      </p>
+      <p class="last-update">
+        Última actualización: <span id="dollar-last-update">—</span>
+      </p>
+
+      <table class="quotes-table">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Compra</th>
+            <th>Venta</th>
+          </tr>
+        </thead>
+        <tbody id="dollar-types-body">
+          <tr>
+            <td colspan="3">Cargando tipos de dólar...</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Riesgo país -->
+    <section id="riesgo-card" class="card">
+      <h2>Riesgo País Argentina</h2>
+
+      <div class="riesgo-main">
+        <span id="riesgo-valor">—</span>
+        <span class="riesgo-units">puntos básicos</span>
+      </div>
+
+      <p class="riesgo-fecha">Fecha: <span id="riesgo-fecha">—</span></p>
+      <p class="last-update">
+        Última actualización: <span id="riesgo-last-update">—</span>
+      </p>
+      <span id="riesgo-badge" class="riesgo-badge">Nivel desconocido</span>
+
+      <p class="riesgo-note">
+        El riesgo país mide cuántos puntos básicos adicionales paga Argentina por encima de los
+        bonos de EE.UU. Valores más bajos indican menor percepción de riesgo.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Desarrollado por 
+      <span> Lisandro Florindo </span>
+    </p>
+  </footer>
+  
+  <script src="app.js"></script>
+</body>
+</html>
