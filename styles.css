@@ -23,6 +23,7 @@
   --transition: 0.2s ease;
 }
 
+/* Layout base */
 body {
   min-height: 100vh;
   font-family: var(--font);
@@ -37,6 +38,7 @@ body {
 .app {
   width: 100%;
   max-width: 1100px;
+  margin: 0 auto;
 }
 
 /* Header */
@@ -51,31 +53,6 @@ body {
   gap: 1rem;
 }
 
-.theme-toggle-btn {
-  border: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.9);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-}
-
-.theme-toggle-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(15, 23, 42, 1);
-}
-
-.theme-toggle-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
 .header-title {
   font-size: 2rem;
   font-weight: 700;
@@ -87,13 +64,7 @@ body {
   color: var(--muted);
 }
 
-.last-update {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: 0.25rem;
-}
-
-/* Cards */
+/* Cards genéricas */
 .card {
   background: radial-gradient(circle at top left, var(--bg-alt) 0, var(--bg-soft) 55%);
   border-radius: var(--radius-lg);
@@ -113,12 +84,19 @@ body {
   font-size: 0.8rem;
 }
 
+/* Texto de última actualización */
+.last-update {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
 /* Carrusel / tira de cotizaciones */
 .ticker-section {
   margin-bottom: 1.5rem;
 }
 
-/* Contenedor del carrusel: ahora es una “bandeja” de chips */
+/* Contenedor: tira de chips */
 .carousel-card {
   margin-top: 0.75rem;
   padding: 1rem 1.2rem;
@@ -135,7 +113,7 @@ body {
 /* Cada chip de cotización */
 .rate-chip {
   min-width: 120px;
-  flex: 1 1 140px;
+  flex: 1 1 160px;
   border-radius: 0.75rem;
   border: 1px solid var(--border);
   padding: 0.45rem 0.6rem;
@@ -167,7 +145,7 @@ body {
   font-weight: 600;
 }
 
-/* Grid principal */
+/* Grid principal: conversor + tabla */
 .main-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
@@ -312,11 +290,29 @@ body {
 .quotes-card .subtitle {
   font-size: 0.8rem;
   color: var(--muted);
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.6rem;
 }
 
+.dollar-types-card .subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.dollar-types-card {
+  margin-bottom: 1.5rem;
+}
+
+/* Hacemos que las cards con tablas puedan scroll horizontal en móvil */
+.quotes-card,
+.dollar-types-card {
+  overflow-x: auto;
+}
+
+/* Para que la tabla no se achique demasiado en pantallas chicas */
 .quotes-table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
@@ -342,17 +338,6 @@ body {
 .quotes-table tr td:first-child {
   font-weight: 600;
   font-size: 0.8rem;
-}
-
-/* Tipos de dolar en Argentina */
-.dollar-types-card .subtitle {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 0.8rem;
-}
-
-.dollar-types-card {
-  margin-bottom: 1.5rem;
 }
 
 /* Riesgo país */
@@ -411,43 +396,94 @@ body {
   border: 1px solid rgba(248, 113, 113, 0.6);
 }
 
+/* Footer */
 .footer {
   margin-top: 1rem;
   font-size: 0.8rem;
-  color:var(--muted);
+  color: var(--muted);
   text-align: center;
 }
 
 .footer span {
   color: var(--accent);
-  font-weight: 600; 
+  font-weight: 600;
 }
 
+/* ========================= */
+/*       MEDIA QUERIES       */
+/* ========================= */
 
-/* Responsive */
+/* Tablets / pantallas medianas */
 @media (max-width: 900px) {
   .main-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .header-title {
+    font-size: 1.7rem;
+  }
+
+  .card {
+    padding: 1.3rem 1.2rem;
+  }
+
+  .rate-chip {
+    flex: 1 1 45%;
+  }
 }
 
+/* Celulares */
 @media (max-width: 600px) {
   body {
     padding: 1rem;
   }
-  .card {
-    padding: 1.3rem 1.1rem;
+
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
   }
+
+  .theme-toggle-btn {
+    align-self: flex-start;
+  }
+
   .header-title {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
-  .field-group {
-    grid-template-columns: minmax(0, 1fr) 2.6rem minmax(0, 1fr);
+
+  .header-subtitle {
+    font-size: 0.85rem;
   }
+
+  .card {
+    padding: 1.1rem 1rem;
+  }
+
   .carousel-card {
     padding: 0.9rem;
   }
+
   .rate-chip {
     flex: 1 1 100%;
+  }
+
+  .quotes-table {
+    min-width: 420px;
+  }
+}
+
+/* Celulares muy chicos */
+@media (max-width: 400px) {
+  .header-title {
+    font-size: 1.35rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .theme-toggle-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
